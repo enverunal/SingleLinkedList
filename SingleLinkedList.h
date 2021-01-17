@@ -4,17 +4,20 @@
 #include <functional>
 #include "llUtility.h"
 
-template <typename T>
-struct node {
-	T m_value{};
-	node<T>* next{nullptr};
-};
+namespace Single {
+	template <typename T>
+	struct node {
+		T m_value{};
+		node<T>* next{ nullptr };
+	};
+}
+
 
 template <typename T>
 class SingleLinkedList{
 private:
-	node<T>* startPointer{};
-	node<T>* lastPointer{};
+	Single::node<T>* startPointer{};
+	Single::node<T>* lastPointer{};
 	int_fast64_t m_size{ 0 };
 public:
 
@@ -66,13 +69,6 @@ public:
 
 };
 
-
-void TemporaryFunction()
-{
-	SingleLinkedList<int> s;
-}
-
-
 template <typename T>
 SingleLinkedList<T>::SingleLinkedList() noexcept {
 
@@ -94,13 +90,13 @@ SingleLinkedList<T>::SingleLinkedList(int_fast64_t size) {
 
 	for (auto i{ 0 }; i < size; ++i) {
 		if (i == 0) {
-			node<T>* newnode = new node<T>();
+			Single::node<T>* newnode = new Single::node<T>();
 			startPointer = newnode;
 			lastPointer = newnode;
 			++m_size;
 		}
 		else {
-			node<T>* newnode = new node<T>();
+			Single::node<T>* newnode = new Single::node<T>();
 			lastPointer->next = newnode;
 			lastPointer = newnode;
 			++m_size;
@@ -115,7 +111,7 @@ SingleLinkedList<T>::~SingleLinkedList() noexcept {
 
 template <typename T>
 void SingleLinkedList<T>::clear() noexcept {
-	node<T>* tempPointer{ nullptr };
+	Single::node<T>* tempPointer{ nullptr };
 	while (startPointer != nullptr) {
 		tempPointer = startPointer;
 		startPointer = startPointer->next;
@@ -138,14 +134,14 @@ void SingleLinkedList<T>::append(const T& value) {
 		return;
 	}
 	if (m_size == 0) {
-		node<T>* newnode = new node<T>();
+		Single::node<T>* newnode = new Single::node<T>();
 		newnode->m_value = value;
 		startPointer = newnode;
 		lastPointer = newnode;
 		++m_size;
 	}
 	else {
-		node<T>* newnode = new node<T>();
+		Single::node<T>* newnode = new Single::node<T>();
 		newnode->m_value = value;
 		lastPointer->next = newnode;
 		lastPointer = newnode;
@@ -166,8 +162,8 @@ void SingleLinkedList<T>::append(std::initializer_list<T> init_list) {
 
 template <typename T>
 void SingleLinkedList<T>::removeValueFirst(const T& value) noexcept {
-	node<T>* tempPointer = startPointer;
-	node<T>* oneBefore = startPointer;
+	Single::node<T>* tempPointer = startPointer;
+	Single::node<T>* oneBefore = startPointer;
 	for (auto i{ 0 }; i < m_size; ++i) {
 
 		if (tempPointer->m_value == value) {
@@ -210,8 +206,8 @@ void SingleLinkedList<T>::removeAt(int_fast64_t position) {
 		throw "unexcepted position";
 		return;
 	}
-	node<T>* tempPointer = startPointer;
-	node<T>* oneBefore = startPointer;
+	Single::node<T>* tempPointer = startPointer;
+	Single::node<T>* oneBefore = startPointer;
 	if (position < m_size) {
 		for (auto i{ 0 }; i < m_size; ++i) {
 			if (position == 0) {
@@ -252,12 +248,15 @@ template <typename T>
 void SingleLinkedList<T>::insert(const T& value, int_fast64_t position) {
 	if (position > m_size || position < 0) {
 		throw "unexcepted position";
-		return;
 	}
-	node<T>* tempPointer = startPointer;
-	node<T>* oneBefore = startPointer;
+	if (m_size == INT_FAST64_MAX) {
+		throw "maximum size has been reached already";
+	}
+
+	Single::node<T>* tempPointer = startPointer;
+	Single::node<T>* oneBefore = startPointer;
 	if (m_size == 0) {
-		node<T>* newnode = new node<T>();
+		Single::node<T>* newnode = new Single::node<T>();
 		newnode->m_value = value;
 		startPointer = newnode;
 		lastPointer = newnode;
@@ -265,7 +264,7 @@ void SingleLinkedList<T>::insert(const T& value, int_fast64_t position) {
 		return;
 	}
 	else if (position == 0) {
-		node<T>* newnode = new node<T>();
+		Single::node<T>* newnode = new Single::node<T>();
 		newnode->m_value = value;
 		newnode->next = startPointer;
 		startPointer = newnode;
@@ -273,7 +272,7 @@ void SingleLinkedList<T>::insert(const T& value, int_fast64_t position) {
 		return;
 	}
 	else if (m_size == position) {
-		node<T>* newnode = new node<T>();
+		Single::node<T>* newnode = new Single::node<T>();
 		newnode->m_value = value;
 		lastPointer->next = newnode;
 		lastPointer = newnode;
@@ -283,7 +282,7 @@ void SingleLinkedList<T>::insert(const T& value, int_fast64_t position) {
 	else {
 		for (auto i{ 0 }; i < m_size; ++i) {
 			if (position == i) {
-				node<T>* newnode = new node<T>();
+				Single::node<T>* newnode = new Single::node<T>();
 				oneBefore->next = newnode;
 				newnode->next = tempPointer;
 				newnode->m_value = value;
@@ -298,7 +297,7 @@ void SingleLinkedList<T>::insert(const T& value, int_fast64_t position) {
 
 template <typename T>
 void SingleLinkedList<T>::merge(const SingleLinkedList<T>& singleLinkedList) noexcept {
-	node<T>* tempPointer{ singleLinkedList.startPointer };
+	Single::node<T>* tempPointer{ singleLinkedList.startPointer };
 	for (auto i{ 0 }; i < singleLinkedList.m_size; ++i) {
 		this->append(tempPointer->m_value);
 		tempPointer = tempPointer->next;
@@ -310,7 +309,7 @@ T SingleLinkedList<T>::elementAt(int_fast64_t position) const {
 	if (position >= m_size || position < 0) {
 		throw "unexpected position";
 	}
-	node<T>* temp{ startPointer };
+	Single::node<T>* temp{ startPointer };
 	for (auto i{ 0 }; i < m_size; ++i) {
 		if (position == i) {
 			return temp->m_value;
@@ -322,7 +321,7 @@ T SingleLinkedList<T>::elementAt(int_fast64_t position) const {
 
 template <typename T>
 bool SingleLinkedList<T>::contains(const T& value)noexcept {
-	node<T>* tempPointer{ startPointer };
+	Single::node<T>* tempPointer{ startPointer };
 	for (auto i{ 0 }; i < m_size; ++i) {
 		if (tempPointer->m_value == value) {
 			return true;
@@ -334,7 +333,7 @@ bool SingleLinkedList<T>::contains(const T& value)noexcept {
 
 template <typename T>
 bool SingleLinkedList<T>::every(std::function<bool(const T& element)> test) const noexcept {
-	node<T>* tempPointer{ startPointer };
+	Single::node<T>* tempPointer{ startPointer };
 	for (auto i{ 0 }; i < m_size; ++i) {
 		if (!test(tempPointer->m_value)) {
 			return false;
@@ -346,7 +345,7 @@ bool SingleLinkedList<T>::every(std::function<bool(const T& element)> test) cons
 
 template <typename T>
 void SingleLinkedList<T>::forEach(std::function<void(T& element)> function)noexcept {
-	node<T>* tempPointer{ startPointer };
+	Single::node<T>* tempPointer{ startPointer };
 	for (auto i{ 0 }; i < m_size; ++i) {
 		function(tempPointer->m_value);
 		tempPointer = tempPointer->next;
@@ -357,7 +356,7 @@ template <typename T>
 std::string SingleLinkedList<T>::join(const std::string& seperator) const noexcept {
 	std::string join;
 	join.reserve(m_size * (2 + seperator.size()));
-	node<T>* tempPointer{ startPointer };
+	Single::node<T>* tempPointer{ startPointer };
 	for (auto i{ 0 }; i < m_size; ++i) {
 		join.append(llUtility::to_string(tempPointer->m_value) + seperator);
 		tempPointer = tempPointer->next;
@@ -390,6 +389,8 @@ bool SingleLinkedList<T>::isEmpty() const noexcept {
 	return m_size > 0 ? false : true;
 }
 
+
+
 template <typename T>
 std::string SingleLinkedList<T>::toString() const noexcept {
 	std::string result{};
@@ -399,7 +400,7 @@ std::string SingleLinkedList<T>::toString() const noexcept {
 	}
 	else {
 		result.reserve(m_size * 4);
-		node<T>* tempPointer = startPointer;
+		Single::node<T>* tempPointer = startPointer;
 		for (auto i{ 0 }; i < m_size; ++i) {
 			result.append(llUtility::to_string(tempPointer->m_value) + "->");
 			tempPointer = tempPointer->next;
@@ -411,8 +412,8 @@ std::string SingleLinkedList<T>::toString() const noexcept {
 template <typename T>
 bool SingleLinkedList<T>::operator==(const SingleLinkedList<T>& singleLinkedList) const noexcept {
 	if (this->m_size == singleLinkedList.m_size) {
-		node<T>* tempPointer1{ this->startPointer };
-		node<T>* tempPointer2{ singleLinkedList.startPointer };
+		Single::node<T>* tempPointer1{ this->startPointer };
+		Single::node<T>* tempPointer2{ singleLinkedList.startPointer };
 		for (auto i{ 0 }; i < m_size; ++i) {
 			if (tempPointer1->m_value != tempPointer2->m_value) {
 				return false;
